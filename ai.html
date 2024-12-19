@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Dự Đoán</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 100%;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #171111;
+            color: white;
+            font-size: 100%;
+            text-align: left;
+            padding: 10px 0;
+        }
+        .table-container {
+            border: 5px solid #1d1616;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: white;
+            ;
+        }
+        td:hover {
+            background-color: #d1e7fd; /* Màu nền khi hover */
+            cursor: pointer;
+        }
+
+        /* CSS cho liên kết trong ô */
+        .link-cell {
+            color: inherit; /* Đảm bảo màu chữ đồng nhất */
+            text-decoration: none; /* Xóa gạch chân của liên kết */
+            display: block; /* Đảm bảo toàn bộ ô là vùng click */
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Màu khi hover vào liên kết */
+        .link-cell:hover {
+            color: #0056b3; /* Màu khi hover vào liên kết */
+        }
+        .low-match {
+            background-color: #c70c0c;
+            color: black
+            ;
+        }
+        .high-match {
+            background-color: #1ca623;
+            color: black
+            ;
+        }
+         /* Menu button styles */
+         .menu-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        /* Filter menu styles */
+        .filter-menu {
+            display: none;
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 200px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Each filter option style */
+        .filter-option {
+            margin: 5px 0;
+        }
+
+        /* Show menu when active */
+        .show {
+            display: block;
+        }
+        .low-match {
+        background-color: #c70c0c;  /* Red color for low match */
+        color: black;
+        }
+
+        .high-match {
+        background-color: #1ca623;  /* Green color for high match */
+        color: black;
+        }
+    </style>
+</head>
+<body>
+     <!-- Menu Button -->
+     <div class="menu-button" onclick="toggleMenu()">☰</div>
+
+     <!-- Filter Menu -->
+     <div class="filter-menu" id="filterMenu">
+         <h3>Filter Candidates</h3>
+         <div class="filter-option">
+             <label for="experienceFilter">Experience:</label>
+             <select id="experienceFilter" onchange="filterTable()">
+                <option value="">All</option>
+                <option value="2 years">2 years</option>
+                <option value="3 years">3 years</option>
+                <option value="4 years">4 years</option>
+                <option value="5 years">5 years</option>
+                <option value="6 years">6 years</option>
+                <option value="7 years">7 years</option>
+                <option value="8 years">8 years</option>
+                <option value="9 years">9 years</option>
+                <option value="10 years">10 years</option>
+            </select>
+        </div>
+        <div class="filter-option">
+            <label for="educationFilter">Education:</label>
+            <select id="educationFilter" onchange="filterTable()">
+                <option value="">All</option>
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+            </select>
+        </div>
+        <div class="filter-option">
+            <label for="skillFilter">Skill:</label>
+            <select id="skillFilter" onchange="filterTable()">
+                <option value="">All</option>
+                <option value="Project Management">Project Management</option>
+                <option value="Acounter">Acounter</option>
+                <option value="Designer">Designer</option>
+                <option value="Data Analysis">Data Analysis</option>
+                <option value="HR">HR</option>
+                <option value="Banking">Banking</option>
+                <option value="Economic">Economic</option>
+                <option value="Science">Science</option>
+                <option value="Commercial">Commercial</option>
+            </select>
+        </div>
+        <button onclick="applyFilter()">Submit</button>
+    </div>
+   <div class="container">
+       <div class="header" style="font-size: 50px"><strong>PRO</strong></style></div>
+       <div class="table-container">
+           <h2>Lịch Sử Dự Đoán</h2>
+           {% if history %}
+           <table id="historyTable">
+               <tr>
+                   <th>Label</th>
+                   <th>Confidence</th>
+                   <th>CV Uploaded</th>
+               </tr>
+               {% for entry in history %}
+               <tr>
+                   <td>{{ entry.label }}</td>
+                   <td>{{ entry.confidence }}</td>
+                   <td><a href="{{ entry.image_url }}" target="_blank">Xem CV</a></td>
+               </tr>
+               {% endfor %}
+           </table>
+           {% else %}
+           <p>Không có lịch sử dự đoán nào.</p>
+           {% endif %}
+           <br>
+           <a href="{{ url_for('home') }}"><button>Quay Lại Trang Chủ</button></a>
+        </div>
+    </div>
+    <script>
+        // Function to apply conditional formatting
+function highlightMatch() {
+    // Get the table
+    const table = document.getElementById('historyTable');
+
+    // Loop through each row in the tbody (skip the header row)
+    for (let i = 1; i < table.rows.length; i++) {
+        // Get the "Overall" cell in the current row (index 5 corresponds to the 6th column)
+        const overallCell = table.rows[i].cells[5];
+        
+        // Extract the numeric value from the "Overall" cell (e.g., "58%" -> 58)
+        const matchValue = parseInt(overallCell.textContent.replace('%', '').trim());
+
+        // Check if match value is below 60 or above 60
+        if (matchValue < 60) {
+            overallCell.classList.add('low-match'); // Apply the "low-match" class
+        } else {
+            overallCell.classList.add('high-match'); // Apply the "high-match" class
+        }
+    }
+}
+        // Function to toggle the display of the filter menu
+        function toggleMenu() {
+            const menu = document.getElementById('filterMenu');
+            menu.classList.toggle('show');
+        }
+    
+        // Function to filter table rows based on selected filter options
+        function filterTable() {
+            const experienceFilter = document.getElementById('experienceFilter').value;
+            const educationFilter = document.getElementById('educationFilter').value;
+            const skillFilter = document.getElementById('skillFilter').value;
+            const table = document.getElementById('historyTable');
+            const rows = table.getElementsByTagName('tr');
+    
+            // Loop through each row (skip the header row)
+            for (let i = 1; i < rows.length; i++) {
+                const experienceCell = rows[i].cells[2].textContent.trim();
+                const educationCell = rows[i].cells[3].textContent.trim();
+                const skillCell = rows[i].cells[4].textContent.trim();
+    
+                let isVisible = true;
+    
+                // Check each filter condition
+                if (experienceFilter && experienceCell !== experienceFilter) {
+                    isVisible = false;
+                }
+                if (educationFilter && educationCell !== educationFilter) {
+                    isVisible = false;
+                }
+                if (skillFilter && skillCell !== skillFilter) {
+                    isVisible = false;
+                }
+    
+                // Show or hide the row based on the filter conditions
+                rows[i].style.display = isVisible ? '' : 'none';
+            }
+        }
+    
+        // Function to apply filters when the user clicks the "Submit" button
+        function applyFilter() {
+            filterTable();
+        }
+    
+        // Run highlightMatch function on window load to apply initial formatting
+        window.onload = function() {
+            highlightMatch();
+        };
+    </script>
+      
+</body>
+</html>

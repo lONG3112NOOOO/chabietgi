@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết Quả Dự Đoán</title>
+</head>
+<body>
+    <h1>Kết Quả Dự Đoán</h1>
+    <p><strong>Label:</strong> {{ label }}</p>
+    <p><strong>Confidence:</strong> {{ percentage }}%</p>
+    <p><strong>CV:</strong> <a href="{{ image_url }}" target="_blank">Xem CV</a></p>
+    <br>
+    <a href="{{ url_for('home') }}"><button>Quay Lại Trang Chủ</button></a>
+    <a href="{{ url_for('view_history') }}"><button>Xem Lịch Sử</button></a>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload CV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 100%;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #171111;
+            color: white;
+            font-size: 100%;
+            text-align: middle;
+            padding: 10px 0;
+        }
+        .table-container {
+            border: 5px solid #1d1616;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: middle;
+        }
+        th {
+            background-color: rgb(86, 83, 83) ;
+            color: white;
+            ;
+        }
+        td:hover {
+            background-color: #d1e7fd; /* Màu nền khi hover */
+            cursor: pointer;
+        }
+
+        /* CSS cho liên kết trong ô */
+        .link-cell {
+            color: inherit; /* Đảm bảo màu chữ đồng nhất */
+            text-decoration: none; /* Xóa gạch chân của liên kết */
+            display: block; /* Đảm bảo toàn bộ ô là vùng click */
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Màu khi hover vào liên kết */
+        .link-cell:hover {
+            color: #0056b3; /* Màu khi hover vào liên kết */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="font-size: 50px"><strong>PRO</strong></div>
+        <div class="table-container">
+            <h1>Upload CV của bạn</h1>
+            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".pdf" required>
+                <input type="submit" value="Upload">
+            </form>
+            <br>
+            <a href="{{ url_for('view_history') }}"><button>History</button></a>
+        </div>
+    </div>
+</body>
+</html>
